@@ -1,3 +1,4 @@
+import pickle
 from models.address_book import AddressBook
 from handlers import (
     add_contact,
@@ -32,9 +33,22 @@ Birthdays:
 - birthdays
 """
 
+def save_data(book: AddressBook, filename: str = "addressbook.pkl") -> None:
+    """Save AddressBook to file."""
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+
+def load_data(filename: str = "addressbook.pkl") -> AddressBook:
+    """Load AddressBook from file."""
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()
 
 def main() -> None:
-    book = AddressBook()
+    book = load_data()
 
     print("Welcome to the assistant bot!")
     print(show_help())
@@ -60,6 +74,7 @@ def main() -> None:
         command, *args = parse_input(user_input)
 
         if command in ["close", "exit"]:
+            save_data(book)
             print("Good bye!")
             break
 
